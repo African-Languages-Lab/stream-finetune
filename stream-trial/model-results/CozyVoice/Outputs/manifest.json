@@ -1,0 +1,64 @@
+[
+  {
+    "lang": "english",
+    "status": "ok",
+    "text": "Four score and seven years ago our fathers brought forth on this continent a new nation, conceived in liberty, and dedicated to the proposition that all men are created equal. Now we are engaged in a great civil war, testing whether that nation, or any nation so conceived and so dedicated, can long endure. We are met on a great battle-field of that war. We have come to dedicate a portion of that field, as a final resting place for those who here gave their lives that that nation might live.",
+    "ref_wav": "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\reference-samples\\english_ref.wav",
+    "outputs": [
+      "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\tts\\ModelResults\\CozyVoice\\Outputs\\english\\english_0.wav",
+      "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\tts\\ModelResults\\CozyVoice\\Outputs\\english\\english_1.wav"
+    ],
+    "elapsed_sec": 81.4
+  },
+  {
+    "lang": "igbo",
+    "status": "ok",
+    "text": "Ụfọdụ na-ekwuka na onye na-akwọ ụgbọala bụ onye Yoruba kụrụ nwanyị onye Hausa, nke mere ka ndị Hausa nọ ebe ahụ tie ya ihe, nke a mere ka ndị Yoruba jìkọ aka ọnụ nuso ha ọgụ, nke wetere tigbuo zọgbuo mere ụnyaahụ.",
+    "ref_wav": "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\reference-samples\\igbo_ref.wav",
+    "outputs": [
+      "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\tts\\ModelResults\\CozyVoice\\Outputs\\igbo\\igbo_0.wav"
+    ],
+    "elapsed_sec": 75.59
+  },
+  {
+    "lang": "hausa",
+    "status": "ok",
+    "text": "Wasu yan arewa kenan Jahilci ya mamaye zuqatanmushiyasa nasara bata zuwa mana yakamata a rika girmama celebrities kodan daukakar da Allah yabasu amma mutane koda wasa basa girmamawa suna gani kamar gayan kowace kalan magana ga celerity wani burgewane",
+    "ref_wav": "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\reference-samples\\hausa_ref.wav",
+    "outputs": [
+      "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\tts\\ModelResults\\CozyVoice\\Outputs\\hausa\\hausa_0.wav"
+    ],
+    "elapsed_sec": 160.91
+  },
+  {
+    "lang": "yoruba",
+    "status": "ok",
+    "text": "Júpítérì jẹ́ kìkósọ́tọ̀ bíi òmìrán ẹ̀fúùfù lápapọ̀ mọ́ Sátúrnù, Úránù àti Nẹ́ptúnù. Lápapọ̀, àwọn plánẹ̀tì mẹ́rẹ̀rin yìí jẹ́ pípè nígbà míràn bíi plánẹ̀tì Jofia.",
+    "ref_wav": "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\reference-samples\\yoruba_ref.wav",
+    "outputs": [
+      "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\tts\\ModelResults\\CozyVoice\\Outputs\\yoruba\\yoruba_0.wav"
+    ],
+    "elapsed_sec": 55.06
+  },
+  {
+    "lang": "twi",
+    "status": "ok",
+    "text": "M'ano bɛka wo tenenee, ɛbɛka wo nkwagyeɛ da mu nyinaa a mennim ano. Mede AWURADE Nyankopɔn ahoɔdenneɛ bɛba abɛkae wo tenenee a ɛyɛ wo nkutoo dea no. Onyankopɔn, wo na wofiri me mmɔfraase kyerɛkyerɛɛ me, na maka w'anwanwadeɛ no mabɛduru sɛsɛɛ.",
+    "ref_wav": "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\reference-samples\\twi_ref.wav",
+    "outputs": [
+      "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\tts\\ModelResults\\CozyVoice\\Outputs\\twi\\twi_0.wav",
+      "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\tts\\ModelResults\\CozyVoice\\Outputs\\twi\\twi_1.wav"
+    ],
+    "elapsed_sec": 108.06
+  },
+  {
+    "lang": "ewe",
+    "status": "ok",
+    "text": "Vestry - sɔlimea ƒe dziɖula, sime ngɔnɔla wp le - ŋlɔ nuto la le Siamlɔm me kple dzitsitsi be nutoa adi be yea kɔ efe si le na vestry la, togbɔbe vestry la mele eme hafi wo he ehɔtala ve o kple dɔwɔla si nuto la kplɔ ve o.",
+    "ref_wav": "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\reference-samples\\ewe_ref.wav",
+    "outputs": [
+      "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\tts\\ModelResults\\CozyVoice\\Outputs\\ewe\\ewe_0.wav"
+    ],
+    "elapsed_sec": 140.68
+  }
+]

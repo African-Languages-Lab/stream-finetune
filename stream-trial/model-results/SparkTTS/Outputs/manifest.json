@@ -1,0 +1,37 @@
+[
+  {
+    "lang": "english",
+    "status": "ok",
+    "text": "Four score and seven years ago our fathers brought forth on this continent a new nation, conceived in liberty, and dedicated to the proposition that all men are created equal. Now we are engaged in a great civil war, testing whether that nation, or any nation so conceived and so dedicated, can long endure. We are met on a great battle-field of that war. We have come to dedicate a portion of that field, as a final resting place for those who here gave their lives that that nation might live.",
+    "ref_wav": "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\reference-samples\\english_ref.wav",
+    "outputs": [
+      "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\tts\\ModelResults\\SparkTTS\\Outputs\\english\\english_0.wav"
+    ],
+    "elapsed_sec": 299.64
+  },
+  {
+    "lang": "igbo",
+    "status": "error",
+    "error": "LibsndfileError(2, \"Error opening 'C:\\\\\\\\Users\\\\\\\\JOHN EZE\\\\\\\\Desktop\\\\\\\\stream-tts\\\\\\\\ModelResults\\\\\\\\CozyVoice\\\\\\\\RefVoiceSample\\\\\\\\igbo_ref.wav': \")"
+  },
+  {
+    "lang": "hausa",
+    "status": "error",
+    "error": "LibsndfileError(2, \"Error opening 'C:\\\\\\\\Users\\\\\\\\JOHN EZE\\\\\\\\Desktop\\\\\\\\stream-tts\\\\\\\\ModelResults\\\\\\\\CozyVoice\\\\\\\\RefVoiceSample\\\\\\\\hausa_ref.wav': \")"
+  },
+  {
+    "lang": "yoruba",
+    "status": "error",
+    "error": "LibsndfileError(2, \"Error opening 'C:\\\\\\\\Users\\\\\\\\JOHN EZE\\\\\\\\Desktop\\\\\\\\stream-tts\\\\\\\\ModelResults\\\\\\\\CozyVoice\\\\\\\\RefVoiceSample\\\\\\\\yoruba_ref.wav': \")"
+  },
+  {
+    "lang": "twi",
+    "status": "error",
+    "error": "LibsndfileError(2, \"Error opening 'C:\\\\\\\\Users\\\\\\\\JOHN EZE\\\\\\\\Desktop\\\\\\\\stream-tts\\\\\\\\ModelResults\\\\\\\\CozyVoice\\\\\\\\RefVoiceSample\\\\\\\\twi_ref.wav': \")"
+  },
+  {
+    "lang": "ewe",
+    "status": "error",
+    "error": "LibsndfileError(2, \"Error opening 'C:\\\\\\\\Users\\\\\\\\JOHN EZE\\\\\\\\Desktop\\\\\\\\stream-tts\\\\\\\\ModelResults\\\\\\\\CozyVoice\\\\\\\\RefVoiceSample\\\\\\\\ewe_ref.wav': \")"
+  }
+]

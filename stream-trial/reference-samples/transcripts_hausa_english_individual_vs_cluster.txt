@@ -1,0 +1,12 @@
+[hausa_ref.wav / individual] /leonardo_scratch/large/userexternal/atsado00/nemotron_ft/checkpoints/individual/ha-NG/individual_ha-NG/checkpoints/individual_ha-NG.nemo
+  shin rarraba na da tsabta yana shiga ruducin dutsen da sukawa
+
+[hausa_ref.wav / cluster] /leonardo_scratch/large/userexternal/atsado00/nemotron_ft/checkpoints/clusters/afroasiatic/cluster_afroasiatic/checkpoints/cluster_afroasiatic.nemo
+  ku?
+
+[english_ref.wav / individual] /leonardo_scratch/large/userexternal/atsado00/nemotron_ft/checkpoints/individual/en-NG/individual_en-NG/checkpoints/individual_en-NG.nemo
+  their for we for today today today today and i toriri co to
+
+[english_ref.wav / cluster] /leonardo_scratch/large/userexternal/atsado00/nemotron_ft/checkpoints/clusters/other_languages/cluster_other_languages/checkpoints/cluster_other_languages.nemo
+  serve the present age and a calling to fuil and that is the calling that we are filling today and that is why i make i keep on making that asserion that we have a claring call to
+

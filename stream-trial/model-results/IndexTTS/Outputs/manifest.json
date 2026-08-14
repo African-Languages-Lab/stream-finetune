@@ -1,0 +1,12 @@
+[
+  {
+    "lang": "english",
+    "status": "ok",
+    "text": "Four score and seven years ago our fathers brought forth on this continent a new nation, conceived in liberty, and dedicated to the proposition that all men are created equal. Now we are engaged in a great civil war, testing whether that nation, or any nation so conceived and so dedicated, can long endure. We are met on a great battle-field of that war. We have come to dedicate a portion of that field, as a final resting place for those who here gave their lives that that nation might live.",
+    "ref_wav": "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\reference-samples\\english_ref.wav",
+    "outputs": [
+      "C:\\Users\\JOHN EZE\\Desktop\\stream-tts\\tts\\ModelResults\\IndexTTS\\Outputs\\english\\english_0.wav"
+    ],
+    "elapsed_sec": 1029.13
+  }
+]

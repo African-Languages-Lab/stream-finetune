@@ -1,0 +1,13 @@
+.env
+**/.env
+wandb/
+**/wandb/
+__pycache__/
+*.pyc
+*.pyo
+stream-asr/NeMo/
+stream-tts/CosyVoice/
+*.nemo
+*.ckpt
+*.pt
+*.wav

@@ -1,0 +1,30 @@
+[
+  {
+    "file": "hausa_ref.wav",
+    "kind": "individual",
+    "target_lang": "ha-NG",
+    "checkpoint": "/leonardo_scratch/large/userexternal/atsado00/nemotron_ft/checkpoints/individual/ha-NG/individual_ha-NG/checkpoints/individual_ha-NG.nemo",
+    "transcript": "shin rarraba na da tsabta yana shiga ruducin dutsen da sukawa"
+  },
+  {
+    "file": "hausa_ref.wav",
+    "kind": "cluster",
+    "target_lang": "ha-NG",
+    "checkpoint": "/leonardo_scratch/large/userexternal/atsado00/nemotron_ft/checkpoints/clusters/afroasiatic/cluster_afroasiatic/checkpoints/cluster_afroasiatic.nemo",
+    "transcript": "ku?"
+  },
+  {
+    "file": "english_ref.wav",
+    "kind": "individual",
+    "target_lang": "en-NG",
+    "checkpoint": "/leonardo_scratch/large/userexternal/atsado00/nemotron_ft/checkpoints/individual/en-NG/individual_en-NG/checkpoints/individual_en-NG.nemo",
+    "transcript": "their for we for today today today today and i toriri co to"
+  },
+  {
+    "file": "english_ref.wav",
+    "kind": "cluster",
+    "target_lang": "en-NG",
+    "checkpoint": "/leonardo_scratch/large/userexternal/atsado00/nemotron_ft/checkpoints/clusters/other_languages/cluster_other_languages/checkpoints/cluster_other_languages.nemo",
+    "transcript": "serve the present age and a calling to fuil and that is the calling that we are filling today and that is why i make i keep on making that asserion that we have a claring call to"
+  }
+]

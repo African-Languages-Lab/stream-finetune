@@ -1,0 +1,6 @@
+[individual] /leonardo_scratch/large/userexternal/atsado00/nemotron_ft/checkpoints/individual/ig-NG/individual_ig-NG/checkpoints/individual_ig-NG.nemo
+  igwe m na emeka ebere ndị eze ọdịnala ọhụrụ ahụ ndụ n'ọdụ ahụ ka ha were ezi okwu.
+
+[cluster] /leonardo_scratch/large/userexternal/atsado00/nemotron_ft/checkpoints/clusters/west_africa_niger_congo/cluster_west_africa_niger_congo/checkpoints/cluster_west_africa_niger_congo.nemo
+  igwe nne kachabenyere ndị eze ọ na ọhụrụ ahụ ndụ n'ọdụ ka ha nwerezi okwu
+
