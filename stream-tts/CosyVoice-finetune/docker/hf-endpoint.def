@@ -1,0 +1,40 @@
+Bootstrap: docker
+From: pytorch/pytorch:2.3.1-cuda12.1-cudnn8-runtime
+
+%post
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update -y && apt-get install -y --no-install-recommends ffmpeg git g++ && rm -rf /var/lib/apt/lists/*
+    pip install --no-cache-dir \
+        "setuptools<81" \
+        fastapi==0.115.6 \
+        "uvicorn[standard]"==0.30.0 \
+        huggingface_hub \
+        transformers==4.51.3 \
+        onnxruntime-gpu==1.18.0 \
+        openai-whisper==20231117 \
+        conformer==0.3.2 \
+        diffusers==0.29.0 \
+        x-transformers==2.11.24 \
+        lightning==2.2.4 \
+        hydra-core==1.3.2 \
+        HyperPyYAML==1.2.3 \
+        omegaconf==2.3.0 \
+        inflect==7.3.1 \
+        librosa==0.10.2 \
+        soundfile==0.12.1 \
+        scipy \
+        einops \
+        tiktoken \
+        wetext==0.0.4 \
+        networkx==3.1 \
+        onnx==1.16.0 \
+        protobuf==4.25 \
+        pydantic==2.7.0 \
+        pyworld==0.3.4 \
+        matplotlib==3.7.5
+
+%runscript
+    exec python /repository/hf_endpoint_server.py
+
+%startscript
+    exec python /repository/hf_endpoint_server.py

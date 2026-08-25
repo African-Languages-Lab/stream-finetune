@@ -1,0 +1,65 @@
+# CosyVoice3 multilang orchestrator -- HF Inference Endpoints "custom container" image.
+#
+# Deliberately holds no model code or weights: HF mounts the deployed repo
+# (all-lab/cosyvoice3-multilang) at /repository at container startup, which is where
+# hf_endpoint_server.py, the vendored cosyvoice/+Matcha-TTS source, and shared assets
+# (tokenizer/campplus/speech_tokenizer/original vocoder) actually live; per-language llm.pt/
+# flow.pt get pulled from their own cosyvoice3-individual-{lang} repos at server startup. This
+# image is just the runtime environment -- rebuild it only when Python dependencies change,
+# never for adding a language or editing server logic (those are a repo push + endpoint
+# restart, no image rebuild).
+#
+# Base matches the torch/torchaudio version this whole project already trains and infers
+# against (torch==2.3.1, CUDA 12.1) -- see stream-tts/CosyVoice/requirements.txt and every
+# venv used throughout stream-tts/CosyVoice-finetune/runs/*.sbatch.
+FROM pytorch/pytorch:2.3.1-cuda12.1-cudnn8-runtime
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -y && apt-get install -y --no-install-recommends ffmpeg git g++ && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir "setuptools<81"
+
+# openai-whisper's legacy setup.py needs pkg_resources at build time -- pip's isolated build
+# env for it fetches its OWN fresh setuptools regardless of what's already installed above
+# (confirmed: "ModuleNotFoundError: No module named 'pkg_resources'" even with setuptools<81
+# already satisfied globally), so --no-build-isolation makes it use the pinned one instead.
+RUN pip install --no-cache-dir --no-build-isolation openai-whisper==20231117
+
+# Split into smaller layers (rather than one huge pip install) and a generous
+# --timeout/--retries: on a slow/flaky connection, a single large wheel (onnxruntime-gpu is
+# ~200MB) can trip pip's default 15s-per-chunk read timeout, and confirmed the hard way that
+# failing a giant single-command install discards ALL of it, forcing a full redownload of every
+# package on retry -- these smaller layers mean a retry only has to redo whichever one failed.
+RUN pip install --no-cache-dir --timeout=180 --retries=10 onnxruntime-gpu==1.18.0
+
+RUN pip install --no-cache-dir --timeout=180 --retries=10 \
+    transformers==4.51.3 \
+    diffusers==0.29.0 \
+    lightning==2.2.4
+
+RUN pip install --no-cache-dir --timeout=180 --retries=10 \
+    fastapi==0.115.6 \
+    "uvicorn[standard]"==0.30.0 \
+    huggingface_hub \
+    rich \
+    conformer==0.3.2 \
+    x-transformers==2.11.24 \
+    hydra-core==1.3.2 \
+    HyperPyYAML==1.2.3 \
+    omegaconf==2.3.0 \
+    inflect==7.3.1 \
+    librosa==0.10.2 \
+    soundfile==0.12.1 \
+    scipy \
+    einops \
+    tiktoken \
+    wetext==0.0.4 \
+    networkx==3.1 \
+    onnx==1.16.0 \
+    protobuf==4.25 \
+    pydantic==2.7.0 \
+    pyworld==0.3.4 \
+    matplotlib==3.7.5
+
+EXPOSE 8080
+ENTRYPOINT ["python", "/repository/hf_endpoint_server.py"]

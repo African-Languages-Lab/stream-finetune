@@ -1,0 +1,45 @@
+name: Build and push CosyVoice3 HF endpoint image
+
+# Builds stream-tts/CosyVoice-finetune/docker/Dockerfile.hf-endpoint on GitHub's own runners
+# (full Docker daemon, reliable bandwidth) and pushes to Docker Hub -- independent of any
+# local machine's network or uptime. Only replaces the build+push step; the HF Inference
+# Endpoint still needs to be pointed at whatever tag this produces.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Docker Hub tag to push (e.g. v4)"
+        required: true
+        default: "v4"
+  push:
+    paths:
+      - "stream-tts/CosyVoice-finetune/docker/Dockerfile.hf-endpoint"
+      - ".github/workflows/build-hf-endpoint-image.yml"
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Determine tag
+        id: tag
+        run: echo "tag=${{ inputs.tag || 'latest' }}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: stream-tts/CosyVoice-finetune/docker
+          file: stream-tts/CosyVoice-finetune/docker/Dockerfile.hf-endpoint
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/cosyvoice3-endpoint:${{ steps.tag.outputs.tag }}
