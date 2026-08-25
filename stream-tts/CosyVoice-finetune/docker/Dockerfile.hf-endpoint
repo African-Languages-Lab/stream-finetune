@@ -1,35 +1,33 @@
-# CosyVoice3 multilang orchestrator -- HF Inference Endpoints "custom container" image.
+# Hugging Face Inference Endpoints -- custom container (NOT a Space).
+# Built automatically by .github/workflows/build-hf-endpoint-image.yml on every push to main
+# -> ghcr.io/<owner>/cosyvoice3-endpoint:latest. Deploy: Inference Endpoints -> Custom
+# Container -> that image URL, port 80, health route /health. Set secret HF_TOKEN (read
+# access to the all-lab/cosyvoice3-individual-* repos handler.py routes to).
 #
-# Deliberately holds no model code or weights: HF mounts the deployed repo
-# (all-lab/cosyvoice3-multilang) at /repository at container startup, which is where
-# hf_endpoint_server.py, the vendored cosyvoice/+Matcha-TTS source, and shared assets
-# (tokenizer/campplus/speech_tokenizer/original vocoder) actually live; per-language llm.pt/
-# flow.pt get pulled from their own cosyvoice3-individual-{lang} repos at server startup. This
-# image is just the runtime environment -- rebuild it only when Python dependencies change,
-# never for adding a language or editing server logic (those are a repo push + endpoint
-# restart, no image rebuild).
-#
-# Base matches the torch/torchaudio version this whole project already trains and infers
-# against (torch==2.3.1, CUDA 12.1) -- see stream-tts/CosyVoice/requirements.txt and every
-# venv used throughout stream-tts/CosyVoice-finetune/runs/*.sbatch.
-FROM pytorch/pytorch:2.3.1-cuda12.1-cudnn8-runtime
+# Mirrors the proven all-lab-tts-endpoint pattern (same org, ms0017/all-lab-tts-endpoint) --
+# GHCR + GITHUB_TOKEN instead of Docker Hub (no separate registry credentials, no local
+# Docker/network dependency), port 80 (HF IE's default health/probe port), and this exact
+# newer CUDA base -- that project reports zero CUDA/driver mismatch issues on the same HF T4
+# infra, unlike torch==2.3.1+cu121 here which hit "libcudart.so.13 not found" (host wants a
+# newer CUDA runtime than that build provides).
+FROM pytorch/pytorch:2.8.0-cuda12.8-cudnn9-runtime
 
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update -y && apt-get install -y --no-install-recommends ffmpeg git g++ && rm -rf /var/lib/apt/lists/*
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONUNBUFFERED=1 \
+    HF_HUB_ENABLE_HF_TRANSFER=1 \
+    PORT=80 \
+    MODEL_DIR=/repository
+
+RUN apt-get update -y && apt-get install -y --no-install-recommends ffmpeg git g++ libsndfile1 && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir "setuptools<81"
 
 # openai-whisper's legacy setup.py needs pkg_resources at build time -- pip's isolated build
-# env for it fetches its OWN fresh setuptools regardless of what's already installed above
-# (confirmed: "ModuleNotFoundError: No module named 'pkg_resources'" even with setuptools<81
-# already satisfied globally), so --no-build-isolation makes it use the pinned one instead.
+# env for it fetches its OWN fresh setuptools regardless of what's already installed above,
+# so --no-build-isolation makes it use the pinned one instead.
 RUN pip install --no-cache-dir --no-build-isolation openai-whisper==20231117
 
-# Split into smaller layers (rather than one huge pip install) and a generous
-# --timeout/--retries: on a slow/flaky connection, a single large wheel (onnxruntime-gpu is
-# ~200MB) can trip pip's default 15s-per-chunk read timeout, and confirmed the hard way that
-# failing a giant single-command install discards ALL of it, forcing a full redownload of every
-# package on retry -- these smaller layers mean a retry only has to redo whichever one failed.
 RUN pip install --no-cache-dir --timeout=180 --retries=10 onnxruntime-gpu==1.18.0
 
 RUN pip install --no-cache-dir --timeout=180 --retries=10 \
@@ -41,6 +39,7 @@ RUN pip install --no-cache-dir --timeout=180 --retries=10 \
     fastapi==0.115.6 \
     "uvicorn[standard]"==0.30.0 \
     huggingface_hub \
+    hf_transfer \
     rich \
     conformer==0.3.2 \
     x-transformers==2.11.24 \
@@ -61,5 +60,5 @@ RUN pip install --no-cache-dir --timeout=180 --retries=10 \
     pyworld==0.3.4 \
     matplotlib==3.7.5
 
-EXPOSE 8080
+EXPOSE 80
 ENTRYPOINT ["python", "/repository/hf_endpoint_server.py"]

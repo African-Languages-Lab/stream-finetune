@@ -1,45 +1,67 @@
 name: Build and push CosyVoice3 HF endpoint image
 
-# Builds stream-tts/CosyVoice-finetune/docker/Dockerfile.hf-endpoint on GitHub's own runners
-# (full Docker daemon, reliable bandwidth) and pushes to Docker Hub -- independent of any
-# local machine's network or uptime. Only replaces the build+push step; the HF Inference
-# Endpoint still needs to be pointed at whatever tag this produces.
+# Mirrors the proven pattern from ms0017/all-lab-tts-endpoint: GHCR + the built-in
+# GITHUB_TOKEN (no separate registry credentials, no local Docker/network dependency).
+# Builds on GitHub's own runners, independent of any local machine.
 
 on:
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: "Docker Hub tag to push (e.g. v4)"
-        required: true
-        default: "v4"
   push:
+    branches: [main]
     paths:
       - "stream-tts/CosyVoice-finetune/docker/Dockerfile.hf-endpoint"
       - ".github/workflows/build-hf-endpoint-image.yml"
+  workflow_dispatch: {}
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/cosyvoice3-endpoint
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # The full CUDA+PyTorch+CosyVoice image is heavy enough to exceed the runner's default
+      # ~14GB free disk (confirmed: a prior run failed with "No space left on device" mid-pip-
+      # install) -- reclaim space by removing large preinstalled toolchains this build doesn't
+      # need (Android SDK, .NET, Haskell, etc.), a standard fix for this class of failure.
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo docker image prune -af
+          df -h /
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Docker Hub
+      - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Determine tag
-        id: tag
-        run: echo "tag=${{ inputs.tag || 'latest' }}" >> "$GITHUB_OUTPUT"
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=sha,format=short
 
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: stream-tts/CosyVoice-finetune/docker
           file: stream-tts/CosyVoice-finetune/docker/Dockerfile.hf-endpoint
+          platforms: linux/amd64
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/cosyvoice3-endpoint:${{ steps.tag.outputs.tag }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
