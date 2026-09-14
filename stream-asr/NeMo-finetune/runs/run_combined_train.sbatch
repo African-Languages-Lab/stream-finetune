@@ -57,7 +57,7 @@ srun python examples/asr/speech_to_text_finetune.py \
     --config-path=/leonardo_scratch/large/userexternal/atsado00/nemotron_ft/configs \
     --config-name=combined_train_config.yaml
 
-if ! grep -q "Trainer.fit. stopped: .max_steps=100000. reached" "$LOG_FILE" 2>/dev/null; then
+if ! grep -q "Trainer.fit. stopped: .max_steps=200000. reached" "$LOG_FILE" 2>/dev/null; then
     echo "=== combined did not reach max_steps, resubmitting ==="
     sbatch "/leonardo/home/userexternal/atsado00/all_lab_workspace/002/all_data/stream/stream-asr/NeMo-finetune/runs/run_combined_train.sbatch"
 fi
