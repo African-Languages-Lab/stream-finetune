@@ -1,0 +1,48 @@
+# Fine-tune ONE CTC model across all mapped languages.
+#
+# Why CTC and not the LLM variant: the repo's own guidance (recipe README, and section 5.7.5
+# of the paper) is that fine-tuned smaller CTC checkpoints match the 7B LLM model on the
+# specific languages they were tuned for. That is exactly this case -- 38 African languages
+# we hold data for, not 1600 we do not.
+#
+# Why not the Unlimited-length model: its finetuning recipe is not supported upstream. See
+# the README in this folder for what that means for long audio.
+model:
+  name: "omniASR_CTC_300M"        # start here; 1B/3B are drop-in once this trains clean
+
+dataset:
+  name: "all_lab_38"
+  train_split: "train"
+  valid_split: "dev"
+  storage_mode: "MANIFEST"        # our tsv/wrd, not the parquet mixture backend
+  task_mode: "ASR"
+  manifest_storage_config:
+    read_text: true
+  asr_task_config:
+    min_audio_len: 8_000          # 0.5 s at 16 kHz
+    max_audio_len: 480_000        # 30 s -- the ceiling for the limited-length models
+    max_num_elements: 480_000
+    batch_shuffle_window: 1000
+    normalize_audio: true
+    example_shuffle_window: 10000
+
+tokenizer:
+  name: "omniASR_tokenizer_v1"
+
+optimizer:
+  config:
+    lr: 5e-05
+
+trainer:
+  freeze_encoder_for_n_steps: 2000   # let the CTC head settle before the encoder moves
+  mixed_precision:
+    dtype: "torch.bfloat16"
+  grad_accumulation:
+    num_batches: 4
+
+regime:
+  num_steps: 100_000
+  validate_after_n_steps: 2000
+  validate_every_n_steps: 2000
+  checkpoint_every_n_steps: 2000
+  publish_metrics_every_n_steps: 200

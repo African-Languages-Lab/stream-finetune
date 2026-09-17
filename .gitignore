@@ -11,3 +11,4 @@ stream-tts/CosyVoice/
 *.ckpt
 *.pt
 *.wav
+stream-asr/omnilingual-asr/

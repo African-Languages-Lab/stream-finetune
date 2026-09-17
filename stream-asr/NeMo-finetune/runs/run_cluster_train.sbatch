@@ -75,5 +75,28 @@ for name in $CLUSTERS; do
 done
 if [ "$REMAINING" -gt 0 ]; then
     echo "=== $REMAINING cluster(s) still incomplete, resubmitting for another 24h ==="
-    sbatch "$0"
+    # A bare one-shot sbatch here silently leaves the orchestration dead on a transient
+    # submission failure (confirmed: "More processors requested than permitted" during a
+    # partition outage killed this exact call with no retry). Retry with backoff, same
+    # pattern as CosyVoice's run_regime_train.sbatch. Dedup-check first in case an earlier
+    # "failed" attempt actually went through server-side.
+    job_name="nemotron-clusters"
+    attempt=0
+    while true; do
+        if timeout 30 squeue -u "$(whoami)" -h -o "%i %j" 2>/dev/null | awk -v me="${SLURM_JOB_ID:-}" '$1 != me' | grep -q " $job_name\$"; then
+            echo "=== a job named $job_name already exists in queue (not us) -- not resubmitting ==="
+            break
+        fi
+        if timeout 30 sbatch "$0"; then
+            break
+        fi
+        attempt=$((attempt + 1))
+        if [ "$attempt" -ge 8 ]; then
+            echo "=== sbatch resubmission failed $attempt times, giving up -- STALLED, needs manual resubmit ===" >&2
+            exit 1
+        fi
+        backoff=$((10 * attempt))
+        echo "=== resubmission failed (attempt $attempt), retrying in ${backoff}s ==="
+        sleep "$backoff"
+    done
 fi

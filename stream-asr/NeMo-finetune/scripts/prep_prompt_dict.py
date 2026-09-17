@@ -1,35 +1,89 @@
-import yaml
+"""Language-prompt slots for our 38 languages on nemotron-3.5-asr-streaming-0.6b.
+
+The model conditions on a 128-slot one-hot vector. The source of truth for which slots are
+taken is the prompt_dictionary inside the shipped .nemo, not the example yaml in the NeMo repo
+(which differs), so this script reads it from the checkpoint and refuses to assign a slot that
+is already used.
+
+Three kinds of assignment:
+
+  REUSE   -- codes NVIDIA already reserved in the shipped dictionary (sw-KE 48 ... or-KE 59,
+             ar-AR 7). Twelve African codes have slots but were never trained; using them costs
+             nothing and keeps our keys identical to NVIDIA's.
+  ENGLISH -- one English. The corpus merges en-GH/NG/UG/ZA and the English moved out of other
+             languages into code "en", which the shipped dictionary already maps to the trained
+             English slot 0 (transcripts are tagged <en-US>, a tag the base tokenizer has).
+  NEW     -- 24 languages get free slots. The numbers match the August run's, so its logs and
+             manifests stay interpretable.
+
+nd-ZW is kept as a key because our manifests use it, but every ndebele source is South African
+Ndebele, so nr-ZA (its correct ISO 639-1 locale) is added as an alias to the same slot.
+
+The result must also be written into the model's own cfg.model_defaults.prompt_dictionary
+before saving: speech_to_text_finetune.py restores the config from the .nemo, and in August the
+extended dictionary reached the dataloader but never the saved checkpoints.
+"""
+import tarfile
 from pathlib import Path
 
-# Original 90 unique indices from the real checkpoint (verified by loading the .nemo directly).
-EXISTING = {
-    'en-US': 0, 'en-GB': 1, 'es-ES': 2, 'es-US': 3, 'zh-CN': 4, 'zh-TW': 5, 'hi-IN': 6, 'ar-AR': 7,
-    'fr-FR': 8, 'de-DE': 9, 'ja-JP': 10, 'ru-RU': 11, 'pt-BR': 12, 'pt-PT': 13, 'ko-KR': 14, 'it-IT': 15,
-    'nl-NL': 16, 'pl-PL': 17, 'tr-TR': 18, 'uk-UA': 19, 'ro-RO': 20, 'el-GR': 21, 'cs-CZ': 22, 'hu-HU': 23,
-    'sv-SE': 24, 'da-DK': 25, 'fi-FI': 26, 'no-NO': 27, 'sk-SK': 28, 'hr-HR': 29, 'bg-BG': 30, 'lt-LT': 31,
-    'th-TH': 32, 'vi-VN': 33, 'id-ID': 34, 'ms-MY': 35, 'bn-IN': 36, 'ur-PK': 37, 'fa-IR': 38, 'ta-IN': 39,
-    'te-IN': 40, 'mr-IN': 41, 'gu-IN': 42, 'kn-IN': 43, 'ml-IN': 44, 'si-LK': 45, 'ne-NP': 46, 'km-KH': 47,
-    'sw-KE': 48, 'am-ET': 49, 'ha-NG': 50, 'zu-ZA': 51, 'yo-NG': 52, 'ig-NG': 53, 'af-ZA': 54, 'rw-RW': 55,
-    'so-SO': 56, 'ny-MW': 57, 'ln-CD': 58, 'or-KE': 59, 'et-EE': 60, 'lv-LV': 61, 'sl-SI': 62, 'he-IL': 64,
-    'ku-TR': 65, 'az-AZ': 66, 'ka-GE': 67, 'hy-AM': 68, 'uz-UZ': 69, 'tg-TJ': 70, 'ky-KG': 71, 'qu-PE': 80,
-    'ay-BO': 81, 'gn-PY': 82, 'nah-MX': 83, 'mi-NZ': 96, 'haw-US': 97, 'sm-WS': 98, 'to-TO': 99,
-    'fr-CA': 100, 'auto': 101, 'mt-MT': 102, 'nb-NO': 103, 'nn-NO': 104,
-}
+import yaml
+
+NEMO = "/leonardo_scratch/large/userexternal/atsado00/nemotron_ft/checkpoints/nemotron-3.5-asr-streaming-0.6b.nemo"
+OUT = Path("/leonardo_scratch/large/userexternal/atsado00/nemotron_ft/configs/prompt_dictionary_v2.yaml")
+NUM_PROMPTS = 128
+
+REUSE = ["sw-KE", "am-ET", "ha-NG", "zu-ZA", "yo-NG", "ig-NG", "af-ZA", "rw-RW",
+         "so-SO", "ny-MW", "ln-CD", "or-KE", "ar-AR"]
+
+ALIAS = {"nr-ZA": "nd-ZW"}
 
 NEW = {
-    'tw-GH': 63, 'ee-GH': 72, 'st-ZA': 73, 'tn-BW': 74, 'nd-ZW': 75, 'ts-ZA': 76, 'ff-SN': 77, 'bm-ML': 78,
-    'ki-KE': 79, 'xh-ZA': 84, 've-ZA': 85, 'ti-ER': 86, 'lg-UG': 87, 'ss-SZ': 88, 'bem-ZM': 89, 'nso-ZA': 90,
-    'mg-MG': 91, 'sn-ZW': 92, 'kr-NG': 93, 'fon-BJ': 94, 'kri-SL': 95, 'ber-MA': 105, 'wo-SN': 106,
-    'umb-AO': 107, 'en-GH': 108, 'en-NG': 109, 'en-ZA': 110, 'en-UG': 111,
+    "tw-GH": 63, "ee-GH": 72, "st-ZA": 73, "tn-BW": 74, "nd-ZW": 75, "ts-ZA": 76,
+    "ff-SN": 77, "bm-ML": 78, "ki-KE": 79, "xh-ZA": 84, "ve-ZA": 85, "ti-ER": 86,
+    "lg-UG": 87, "ss-SZ": 88, "bem-ZM": 89, "nso-ZA": 90, "mg-MG": 91, "sn-ZW": 92,
+    "kr-NG": 93, "fon-BJ": 94, "kri-SL": 95, "ber-MA": 105, "wo-SN": 106, "umb-AO": 107,
 }
 
-merged = {**EXISTING, **NEW}
-assert len(set(merged.values())) <= 128
 
-OUT_DIR = Path("/leonardo_scratch/large/userexternal/atsado00/nemotron_ft/configs")
-with open(OUT_DIR / "prompt_dictionary.yaml", "w") as f:
-    f.write("prompt_dictionary:\n")
-    for k, v in merged.items():
-        f.write(f"  {k}: {v}\n")
+def shipped_dictionary():
+    with tarfile.open(NEMO) as tar:
+        member = next(m for m in tar.getmembers() if m.name.lstrip("./") == "model_config.yaml")
+        cfg = yaml.safe_load(tar.extractfile(member))
+    return dict(cfg["model_defaults"]["prompt_dictionary"])
 
-print(f"Total codes: {len(merged)}, unique indices: {len(set(merged.values()))}, max index: {max(merged.values())}")
+
+def main():
+    shipped = shipped_dictionary()
+    used = set(shipped.values())
+
+    missing = [c for c in REUSE if c not in shipped]
+    assert not missing, f"expected reserved codes absent from checkpoint: {missing}"
+
+    clash = {c: i for c, i in NEW.items() if i in used}
+    assert not clash, f"slots already used in the shipped dictionary: {clash}"
+    assert len(set(NEW.values())) == len(NEW), "two new languages share a slot"
+    assert all(0 <= i < NUM_PROMPTS for i in NEW.values())
+
+    merged = {**shipped, **NEW}
+    for alias, target in ALIAS.items():
+        merged[alias] = merged[target]
+
+    assert shipped.get("en") == 0, "expected the shipped dictionary to map 'en' to slot 0"
+    ours = REUSE + list(NEW) + ["en"]
+    assert len(set(ours)) == 38, len(set(ours))
+
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    with open(OUT, "w") as f:
+        f.write("prompt_dictionary:\n")
+        for k, v in merged.items():
+            f.write(f"  {k}: {v}\n")
+
+    free = sorted(set(range(NUM_PROMPTS)) - set(merged.values()))
+    print(f"shipped: {len(shipped)} keys / {len(used)} slots")
+    print(f"ours:    {len(REUSE)} reused, {len(NEW)} new slots, {len(ALIAS)} aliases")
+    print(f"merged:  {len(merged)} keys / {len(set(merged.values()))} slots, {len(free)} still free: {free}")
+    print(f"wrote {OUT}")
+
+
+if __name__ == "__main__":
+    main()

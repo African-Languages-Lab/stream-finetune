@@ -16,15 +16,36 @@ CKPT_ROOT = Path("/leonardo_scratch/large/userexternal/atsado00/nemotron_ft/chec
 OUT_PATH = REF_DIR / "transcripts_individual_models.txt"
 OUT_JSON = REF_DIR / "transcripts_individual_models.json"
 
-# (reference wav, target_lang code, path to that language's fine-tuned checkpoint)
-JOBS = [
-    ("english_ref.wav", "en-NG", CKPT_ROOT / "en-NG/individual_en-NG/checkpoints/individual_en-NG--val_wer=0.9592-epoch=1-last.ckpt"),
-    ("igbo_ref.wav", "ig-NG", CKPT_ROOT / "ig-NG/individual_ig-NG/checkpoints/individual_ig-NG.nemo"),
-    ("hausa_ref.wav", "ha-NG", CKPT_ROOT / "ha-NG/individual_ha-NG/checkpoints/individual_ha-NG.nemo"),
-    ("yoruba_ref.wav", "yo-NG", CKPT_ROOT / "yo-NG/individual_yo-NG/checkpoints/individual_yo-NG.nemo"),
-    ("twi_ref.wav", "tw-GH", CKPT_ROOT / "tw-GH/individual_tw-GH/checkpoints/individual_tw-GH.nemo"),
-    ("ewe_ref.wav", "ee-GH", CKPT_ROOT / "ee-GH/individual_ee-GH/checkpoints/individual_ee-GH.nemo"),
+def latest_checkpoint(target_lang):
+    """Prefer the final exported .nemo; else the highest-epoch non-unfinished .ckpt -- avoids
+    hardcoding a specific filename that goes stale as training continues past it."""
+    d = CKPT_ROOT / target_lang / f"individual_{target_lang}" / "checkpoints"
+    nemo_files = sorted(d.glob("*.nemo"))
+    if nemo_files:
+        return nemo_files[-1]
+    unfinished_stems = {p.name[: -len("-unfinished")] for p in d.glob("*-unfinished")}
+    candidates = [p for p in d.glob("*.ckpt") if p.name not in unfinished_stems]
+    if not candidates:
+        return None
+    import re
+
+    def step_key(p):
+        m = re.search(r"epoch=(\d+)", p.name)
+        return int(m.group(1)) if m else -1
+
+    return sorted(candidates, key=step_key)[-1]
+
+
+# (reference wav, target_lang code)
+_LANGS = [
+    ("english_ref.wav", "en-NG"),
+    ("igbo_ref.wav", "ig-NG"),
+    ("hausa_ref.wav", "ha-NG"),
+    ("yoruba_ref.wav", "yo-NG"),
+    ("twi_ref.wav", "tw-GH"),
+    ("ewe_ref.wav", "ee-GH"),
 ]
+JOBS = [(wav, lang, latest_checkpoint(lang)) for wav, lang in _LANGS]
 
 
 def load_model(ckpt_path):
@@ -39,6 +60,11 @@ def main():
     results = []
     for wav_name, target_lang, ckpt_path in JOBS:
         wav_path = REF_DIR / wav_name
+        if ckpt_path is None:
+            print(f"=== {wav_name} ({target_lang}): no checkpoint found at all ===")
+            results.append({"file": wav_name, "target_lang": target_lang, "transcript": None,
+                             "error": "no checkpoint found"})
+            continue
         print(f"=== {wav_name} ({target_lang}) using {ckpt_path.name} ===")
         if not ckpt_path.exists():
             print(f"  MISSING checkpoint: {ckpt_path}")
