@@ -16,6 +16,10 @@ CLUSTERS="afroasiatic east_africa_bantu southern_central_bantu west_africa_niger
 LANGS="af-ZA am-ET ar-AR bem-ZM ber-MA bm-ML ee-GH en-GH en-NG en-UG en-ZA ff-SN fon-BJ ha-NG ig-NG ki-KE kri-SL kr-NG lg-UG ln-CD mg-MG nd-ZW nso-ZA ny-MW or-KE rw-RW sn-ZW so-SO ss-SZ st-ZA sw-KE ti-ER tn-BW ts-ZA tw-GH umb-AO ve-ZA wo-SN xh-ZA yo-NG zu-ZA"
 
 echo "=== combined ==="
+# Filters to the same embedding/speech_token validity check individual/cluster regimes
+# already get -- reading kaldi_data/global directly (the old behavior) let rows missing
+# speech_token through and crashed llm training with KeyError: 'whisper_feat'.
+python3 "$SCRIPTS_DIR/04_build_regime_kaldi.py" --regime combined --kind combined
 bash "$SCRIPTS_DIR/05_make_regime_parquet.sh" combined
 sbatch --job-name=cosyft-combined "$RUNS_DIR/run_regime_train.sbatch" combined combined 3
 

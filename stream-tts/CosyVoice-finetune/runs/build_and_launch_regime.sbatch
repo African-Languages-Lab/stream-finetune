@@ -32,9 +32,11 @@ RUNS_DIR=/leonardo/home/userexternal/atsado00/all_lab_workspace/002/all_data/str
 
 source /leonardo_work/AIH4A_udutech/cosyvoice_venv/bin/activate
 
-if [ "$KIND" != "combined" ]; then
-    python3 "$SCRIPTS_DIR/04_build_regime_kaldi.py" --regime "$REGIME" --kind "$KIND"
-fi
+# combined now goes through 04_build_regime_kaldi.py too, not just cluster/individual -- it
+# used to read kaldi_data/global directly, which has no embedding/speech_token validity
+# filtering (that dir is built before feature extraction runs), letting rows with a missing
+# speech_token through and crashing llm training with KeyError: 'whisper_feat'.
+python3 "$SCRIPTS_DIR/04_build_regime_kaldi.py" --regime "$REGIME" --kind "$KIND"
 PARQUET_NAME="$REGIME"
 [ "$KIND" = "cluster" ] && PARQUET_NAME="cluster_$REGIME"
 [ "$KIND" = "individual" ] && PARQUET_NAME="individual_$REGIME"

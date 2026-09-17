@@ -204,7 +204,10 @@ train_conf:
     grad_clip: 5
     accum_grad: 2
     log_interval: 100
-    save_per_step: 2000  # was -1 (epoch-only); periodic checkpoints needed for a ~32k-hour dataset
+    save_per_step: 10000  # was 2000; CV-loss audit found llm/flow diverge within a few
+    # thousand steps on most regimes -- best checkpoint is early, not late -- so finer-grained
+    # saves there aren't buying much and were driving disk usage; 10k keeps enough resolution
+    # to find the best-CV-loss checkpoint without saving every 2k steps for 200+ epochs
 
 # gan train conf
 train_conf_gan:
@@ -220,4 +223,6 @@ train_conf_gan:
     grad_clip: 5
     accum_grad: 1 # in gan training, accum_grad must be 1
     log_interval: 100
-    save_per_step: 2000  # was -1 (epoch-only)
+    save_per_step: 25000  # was 2000; new step target is 250k-500k, saving every 2k would mean
+    # 100-250 checkpoints per regime -- 25k keeps a reasonable number of rollback points without
+    # the disk blowup, and hifigan hasn't shown the same early-divergence pattern llm/flow did
