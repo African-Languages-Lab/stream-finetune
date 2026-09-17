@@ -1,0 +1,29 @@
+{
+  "english": {
+    "native": "Good morning! How are you doing today? The market is very busy this afternoon, so we should leave early. What time does the bus to the city leave on Saturday? Please call Ada at half past eight tomorrow to confirm the meeting in Lagos."
+  },
+  "hausa": {
+    "native": "Sannu da safe! Yaya kake yau? Kasuwa tana cike da mutane yau da yamma, don haka ya kamata mu tafi da wuri. Karfe nawa ne bas ɗin da ke zuwa birni zai tashi ranar Asabar? Don Allah ka kira Ada da karfe takwas da rabi gobe domin tabbatar da taron da ke Legas.",
+    "code_switch": "Sannu! Good morning, yaya kake? Please ka kira Ada by 8:30 AM gobe domin ka confirm the meeting da ke Lagos. The bus zai tashi at 6:45 ranar Asabar, kuma kusan 25 people daga office za su travel, so ka zo early, okay?"
+  },
+  "igbo": {
+    "native": "Ụtụtụ ọma! Kedu ka ị mere taa? Ahịa jupụtara na mmadụ nʼehihie taa, yabụ ka anyị pụọ ọsọ ọsọ. Kedu oge bọs na-aga obodo ga-apụ na Satọde? Biko kpọọ Ada nʼelekere asatọ na ọkara echi ka o kwado nzukọ dị na Legos.",
+    "code_switch": "Ụtụtụ ọma! Please kpọọ Ada by 8:30 AM echi ka o confirm the meeting dị na Lagos. The bus ga-apụ by 6:45 na Satọde, na ihe dịka 25 people si office ga-eje njem, so bịa early, okay?"
+  },
+  "yoruba": {
+    "native": "Ẹ káàárọ̀! Báwo ni o ṣe wà lónìí? Ọjà kún fún ènìyàn ní ọ̀sán yìí, nítorí náà ẹ jẹ́ kí a lọ ní kùtùkùtù. Ìgbà wo ni ọkọ̀ tí ń lọ sí ìlú yóò kúrò ní ọjọ́ Àbámẹ́ta? Jọ̀wọ́ pe Àdá ní aago mẹ́jọ àbọ̀ ọ̀la kí ó lè fìdí ìpàdé tí ó wà ní Èkó múlẹ̀.",
+    "code_switch": "Ẹ káàárọ̀! Please pe Àdá by 8:30 AM ọ̀la kí ó lè confirm the meeting tí ó wà ní Lagos. The bus yóò kúrò ní 6:45 ní ọjọ́ Àbámẹ́ta, ó sì fẹ́rẹ̀ẹ́ tó 25 people láti office tí wọn yóò travel, so wá ní kùtùkùtù, okay?"
+  },
+  "twi": {
+    "native": "Maakye! Wo ho te sɛn ɛnnɛ? Dwaberem no ayɛ ma ɛnnɛ awia yi, enti ma yɛnkɔ ntɛm. Bɔ ben na bɔs a ɔrekɔ kurow no mu bɛfi hɔ Memeneda? Mesrɛ wo, frɛ Ada ɔkyena anɔpa ma ɔmmɛhyɛ nhyiam a ɛwɔ Lagos no mu den.",
+    "code_switch": "Maakye! Please frɛ Ada by 8:30 AM ɔkyena na ɔmmɛ confirm the meeting a ɛwɔ Lagos. The bus bɛfi hɔ by 6:45 Memeneda, na ɛbɛyɛ 25 people a wɔfiri office bɛtu kwan, so bra ntɛm, okay?"
+  },
+  "ewe": {
+    "native": "Ŋdi na wò! Aleke nèfɔ egbea? Asime yɔ fũu egbe ɣetrɔ sia, eyata mina míadzo kaba. Ɣeyiɣi ka ʋu si yina dua me la adzo le Memleɖagbe? Meɖe kuku, yɔ Ada etsɔ ŋdi be wòaɖo takpekpe si le Lagos la dzi kpe.",
+    "code_switch": "Ŋdi na wò! Please yɔ Ada by 8:30 AM etsɔ be wòa confirm the meeting si le Lagos. The bus adzo le 6:45 le Memleɖagbe, eye ame 25 tso office adzo, so va kaba, okay?"
+  },
+  "swahili": {
+    "native": "Habari za asubuhi! Umeamkaje leo? Sokoni kumejaa watu mchana huu, kwa hiyo tuondoke mapema. Basi linaloelekea mjini litaondoka saa ngapi siku ya Jumamosi? Tafadhali mpigie Ada simu saa mbili na nusu kesho ili athibitishe mkutano ulioko Lagos.",
+    "code_switch": "Habari za asubuhi! Please mpigie Ada by 8:30 AM kesho ili athibitishe the meeting iliyoko Lagos. The bus itaondoka by 6:45 siku ya Jumamosi, na takriban watu 25 kutoka office watasafiri, so njoo early, okay?"
+  }
+}
